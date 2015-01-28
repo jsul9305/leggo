@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Leggo</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">연동 앱 선택</string>
+    <string name="start_service">Start Finding</string>
+    
+    <string name="pref_linkapp_label">Link Map Apps</string>
+    <string name="pref_linkapp_label_daum">Daum Maps</string>
+    <string name="pref_linkapp_label_google">Google Maps</string>
+    <string name="pref_linkapp_key">linkapp</string>
+    <string name="pref_linkapp_daum">daum</string>
+    <string name="pref_linkapp_google">google</string>
+
+</resources>

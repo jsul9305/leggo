@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="pref_linkapp_options">
+        <item>@string/pref_linkapp_label_daum</item>
+        <item>@string/pref_linkapp_label_google</item>
+    </string-array>
+    <string-array name="pref_linkapp_values">
+        <item>@string/pref_linkapp_daum</item>
+        <item>@string/pref_linkapp_google</item>
+    </string-array>
+</resources>

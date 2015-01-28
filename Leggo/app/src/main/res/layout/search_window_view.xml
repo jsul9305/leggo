@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="96dp"
+    android:orientation="horizontal" >
+    <EditText
+        android:id="@+id/findString"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_weight="9">
+        <requestFocus />
+    </EditText>
+    <ImageButton
+        android:id="@+id/find"
+        android:src="@mipmap/location_search"
+        android:layout_width="41dp"
+        android:layout_height="48dp"
+        android:layout_weight="1" />
+
+</LinearLayout>

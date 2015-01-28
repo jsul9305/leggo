@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <ListPreference
+        android:title="@string/pref_linkapp_label"
+        android:key="@string/pref_linkapp_key"
+        android:defaultValue="@string/pref_linkapp_daum"
+        android:entryValues="@array/pref_linkapp_values"
+        android:entries="@array/pref_linkapp_options" />
+</PreferenceScreen>
