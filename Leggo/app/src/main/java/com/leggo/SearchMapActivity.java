@@ -209,7 +209,7 @@ public class SearchMapActivity extends ActionBarActivity implements MapView.MapV
                 by = "FOOT";
         } else if(linkapp.equals(getString(R.string.pref_linkapp_google))){
             // 2015.01.28 erorr exist: don;t working to google url scheme
-            appMaps = " http://maps.google.co.kr/maps?";
+            appMaps = "http://maps.google.com/maps?";
             startPoint = "saddr";
             endPoint = "daddr";
             mode = "dirflg";
