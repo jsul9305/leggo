@@ -13,4 +13,7 @@
     <string name="pref_linkapp_daum">daum</string>
     <string name="pref_linkapp_google">google</string>
 
+    <string name="action_title">Leggo</string>
+    <string name="action_description">Find a path</string>
+
 </resources>
