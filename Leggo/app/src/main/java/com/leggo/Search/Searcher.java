@@ -61,7 +61,9 @@ public class Searcher {
             List<Item> itemList = parse(json);
             if (onFinishSearchListener != null) {
                 if (itemList == null) {
-                    onFinishSearchListener.onFail();
+                    onFinishSearchListener.onFail(0);
+                } else if (itemList.size() <= 0) {
+                    onFinishSearchListener.onFail(1);
                 } else {
                     onFinishSearchListener.onSuccess(itemList);
                 }

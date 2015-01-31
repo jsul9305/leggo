@@ -1,6 +1,8 @@
 package com.leggo;
 
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
+import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -18,8 +20,21 @@ public class SettingsActivity extends PreferenceActivity
         // For all preferences, attach an OnPreferenceChangeListener so the UI summary can be
         // updated when the preference changes.
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_linkapp_key)));
+        bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_savetime_key)));
+        CheckBoxPreference chkPreference = (CheckBoxPreference)findPreference(getString(R.string.pref_savepoint_key));
+        changeEditPreferenceEnabled(chkPreference.isChecked());
+        chkPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                changeEditPreferenceEnabled((boolean)newValue);
+                return true;
+            }
+        });
     }
-
+    private void changeEditPreferenceEnabled(boolean checked){
+        EditTextPreference editPreference = (EditTextPreference)findPreference(getString(R.string.pref_savetime_key));
+        editPreference.setEnabled(checked);
+    }
     private void bindPreferenceSummaryToValue(Preference preference) {
         preference.setOnPreferenceChangeListener(this);
 

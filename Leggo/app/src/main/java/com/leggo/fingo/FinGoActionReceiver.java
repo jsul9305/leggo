@@ -15,6 +15,7 @@ public class FinGoActionReceiver extends AbstractActionReceiver {
 
 	@Override
 	public void action2() {
+        context.stopService(new Intent(context, LocationFindService.class));
 	}
 
 	@Override

@@ -15,12 +15,13 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Button startButton = (Button)findViewById(R.id.startButton);
-        startButton.setOnClickListener(new View.OnClickListener() {
+        Button setButton = (Button)findViewById(R.id.settingButton);
+        setButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startService(new Intent(getApplicationContext(), LocationFindService.class));
-                finish();
+                //startService(new Intent(getApplicationContext(), LocationFindService.class));
+                //finish();
+                startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
             }
         });
     }

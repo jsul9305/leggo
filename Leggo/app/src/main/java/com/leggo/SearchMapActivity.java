@@ -1,9 +1,9 @@
 package com.leggo;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -26,12 +26,15 @@ import net.daum.mf.map.api.MapPoint.GeoCoordinate;
 import net.daum.mf.map.api.MapPointBounds;
 import net.daum.mf.map.api.MapView;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Date;
 
 /**
  * Created by user on 2015-01-28.
@@ -84,8 +87,14 @@ public class SearchMapActivity extends ActionBarActivity implements MapView.MapV
                     }
 
                     @Override
-                    public void onFail() {
-                        showToast("API_KEY의 제한 트래픽이 초과되었습니다.");
+                     public void onFail(int search_result) {
+                        if(search_result == 0) {
+                            showToast("API_KEY의 제한 트래픽이 초과되었습니다.");
+                        } else {
+                            showToast(searchQuery + " 검색 결과가 없습니다.");
+                            finish();
+                            startService(new Intent(getApplicationContext(), LocationFindService.class));
+                        }
                     }
                 });
                 mMapView.setCurrentLocationTrackingMode(MapView.CurrentLocationTrackingMode.TrackingModeOff);
@@ -187,56 +196,34 @@ public class SearchMapActivity extends ActionBarActivity implements MapView.MapV
         return content;
     }
 
-    private void openFindRoad(GeoCoordinate startGeo, GeoCoordinate endGeo, double distance){
-        String by = new String();
-        String startPoint = new String();
-        String endPoint = new String();
-        String appMaps = new String();
-        String mode = new String();
-        StringBuilder sb = new StringBuilder();
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        String linkapp = sharedPreferences.getString(
-                getString(R.string.pref_linkapp_key),
-                getString(R.string.pref_linkapp_daum));
-        if (linkapp.equals(getString(R.string.pref_linkapp_daum))){
-            appMaps = "daummaps://route?";
-            startPoint = "sp";
-            endPoint = "ep";
-            mode = "by";
-            if(distance >= 400)
-                by = "PUBLICTRANSIT";
-            else
-                by = "FOOT";
-        } else if(linkapp.equals(getString(R.string.pref_linkapp_google))){
-            // 2015.01.28 erorr exist: don;t working to google url scheme
-            appMaps = "http://maps.google.com/maps?";
-            startPoint = "saddr";
-            endPoint = "daddr";
-            mode = "dirflg";
-            if(distance >= 400)
-                by = "r";
-            else
-                by = "w";
-        }
-
-        sb.append(appMaps)
-                .append(startPoint).append("=")
-                .append(startGeo.latitude).append(",").append(startGeo.longitude)
-                .append("&").append(endPoint).append("=")
-                .append(endGeo.latitude).append(",").append(endGeo.longitude)
-                .append("&").append(mode).append("=")
-                .append(by);
-
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(sb.toString()));
-        startActivity(intent);
-        finish();
-    }
-
     @Override
     public void onCalloutBalloonOfPOIItemTouched(MapView mapView, MapPOIItem mapPOIItem, MapPOIItem.CalloutBalloonButtonType calloutBalloonButtonType) {
         Item item = mTagItemMap.get(mapPOIItem.getTag());
         MapPoint mapPoint = MapPoint.mapPointWithGeoCoord(item.latitude, item.longitude);
-        openFindRoad(currentGeoCoordinate, mapPoint.getMapPointGeoCoord(), item.distance);
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean autoFind = sharedPrefs.getBoolean(getString(R.string.pref_savepoint_key), true);
+        if (autoFind){
+            try{
+                FileOutputStream fos = openFileOutput("auto.fnd", Context.MODE_WORLD_WRITEABLE);
+                StringBuilder sbWrite = new StringBuilder();
+                // Curent Time
+                String curTime = new SimpleDateFormat("HH:mm:ss").format(new Date(System.currentTimeMillis()));
+                sbWrite.append("tm=").append(curTime).append("&")
+                        .append("st=").append(currentGeoCoordinate.latitude).append(", ")
+                        .append(currentGeoCoordinate.longitude).append("&")
+                        .append("ed=").append(item.latitude).append(", ")
+                        .append(item.longitude).append("&")
+                        .append("dt=").append(item.distance);
+                byte[] strByte = sbWrite.toString().getBytes();
+                fos.write(strByte);
+                fos.close();
+                showToast("File saved success");
+            } catch(IOException e){
+                showToast("File saved fail");
+            }
+        }
+        FindRoadUtil.getInstance().openFindRoad(this, currentGeoCoordinate, mapPoint.getMapPointGeoCoord(), item.distance);
+        finish();
 
         /* 장소 상세 정보 Location Detail Information
 		StringBuilder sb = new StringBuilder();

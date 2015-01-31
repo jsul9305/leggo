@@ -3,8 +3,11 @@ package com.leggo;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.PixelFormat;
+import android.net.Uri;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +16,13 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
+
+import net.daum.mf.map.api.MapPoint;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class LocationFindService extends Service {
     private WindowManager windowManager;
@@ -29,6 +39,49 @@ public class LocationFindService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean autoFind = sharedPrefs.getBoolean(getString(R.string.pref_savepoint_key), true);
+        String autoTimes = sharedPrefs.getString(getString(R.string.pref_savetime_key), "");
+        long autoTime = Long.parseLong(autoTimes);
+        if (autoFind){
+            try{
+                FileInputStream fis = openFileInput("auto.fnd");
+                byte[] buffer = new byte[fis.available()];
+                fis.read(buffer);
+                String readedStr = new String(buffer);
+                // Curent Time
+                String curTime = new SimpleDateFormat("HH:mm:ss").format(new Date(System.currentTimeMillis()));
+                // Previous Time
+                String prevTime = readedStr.substring(3, readedStr.indexOf("&"));
+                readedStr = cutString(readedStr, 3+prevTime.length());
+                // Start Point
+                String stLatitude = readedStr.substring(4, readedStr.indexOf(","));
+                readedStr = cutString(readedStr, 6+stLatitude.length());
+                String stLongitude = readedStr.substring(0, readedStr.indexOf("&"));
+                readedStr = cutString(readedStr, 1+stLongitude.length());
+                // End Point
+                String edLatitude = readedStr.substring(3, readedStr.indexOf(","));
+                readedStr = cutString(readedStr, 5+edLatitude.length());
+                String edLongitude = readedStr.substring(0, readedStr.indexOf("&"));
+                readedStr = cutString(readedStr, 1+edLongitude.length());
+                // Distance
+                double distance = Double.parseDouble(readedStr.substring(3, readedStr.length()));
+                long duration = durationTimes(prevTime, curTime);
+                if(duration >= 0 && duration <= autoTime){
+                    double latitude = Double.valueOf(stLatitude);
+                    double longitude = Double.valueOf(stLongitude);
+                    MapPoint.GeoCoordinate startGeo = new MapPoint.GeoCoordinate(latitude, longitude);
+                    latitude = Double.valueOf(edLatitude);
+                    longitude = Double.valueOf(edLongitude);
+                    MapPoint.GeoCoordinate endGeo = new MapPoint.GeoCoordinate(latitude, longitude);
+                    stopSelf();
+                    FindRoadUtil.getInstance().openFindRoad(getApplicationContext(), startGeo, endGeo, distance);
+                }
+            } catch(IOException e){
+            }
+        }
+
         windowManager = (WindowManager)getSystemService(WINDOW_SERVICE);
 
         LayoutInflater layoutInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -69,6 +122,27 @@ public class LocationFindService extends Service {
         windowManager.addView(searchView, params);
     }
 
+    private String cutString(String temp, int startLength){
+        return temp.substring(startLength, temp.length());
+    }
+
+    private long durationTimes(String fileTime, String curTime){
+        long fileHour2sec = transTimes(fileTime, 0) * 60 * 60;
+        long fileMin2sec = transTimes(fileTime, 3) * 60;
+        long fileSecond = transTimes(fileTime, 6);
+        long fileSec = fileHour2sec + fileMin2sec + fileSecond;
+        long curHour2sec = transTimes(curTime, 0) * 60 * 60;
+        long curMin2sec = transTimes(curTime, 3) * 60;
+        long curSecond = transTimes(curTime, 6);
+        long curSec = curHour2sec + curMin2sec + curSecond;
+        long minusMin = (curSec - fileSec) / (60);
+        return minusMin;
+    }
+    private long transTimes(String str, int start){
+        String temp = str.substring(start, start+2);
+        return Long.parseLong(temp);
+    }
+    
     private void hideSoftKeyboard() {
         InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);

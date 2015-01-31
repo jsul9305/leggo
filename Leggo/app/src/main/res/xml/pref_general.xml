@@ -8,4 +8,16 @@
         android:defaultValue="@string/pref_linkapp_daum"
         android:entryValues="@array/pref_linkapp_values"
         android:entries="@array/pref_linkapp_options" />
+    <CheckBoxPreference
+        android:title="@string/pref_saveponit_label"
+        android:key="@string/pref_savepoint_key"
+        android:defaultValue="true" />
+    <EditTextPreference
+        android:defaultValue="1"
+        android:summary="1"
+        android:title="@string/pref_savetime_label"
+        android:dialogTitle="@string/pref_savetime_label"
+        android:key="@string/pref_savetime_key"
+        android:inputType="number"
+        android:autoText="true" />
 </PreferenceScreen>

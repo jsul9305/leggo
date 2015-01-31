@@ -23,7 +23,7 @@ public abstract class AbstractActionScanReceiver extends BroadcastReceiver
 		Intent i = new Intent(Intent.ACTION_MAIN);
 
 		i.setAction(IExternalFingoAction.INSTALLED_FINGO_ACTION);
-		i.putExtra(IExternalFingoAction.Key.RESOURCE.name(), action.getIcon());
+		i.putExtra(IExternalFingoAction.Key.RESOURCE.name(), action.getIcon()+"@"+action.getPackageName());
 		i.putExtra(IExternalFingoAction.Key.PKG_NAME.name(),
 				action.getPackageName());
 		i.putExtra(IExternalFingoAction.Key.CLASS_NAME.name(),

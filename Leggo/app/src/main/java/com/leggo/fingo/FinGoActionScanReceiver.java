@@ -27,7 +27,7 @@ public class FinGoActionScanReceiver extends AbstractActionScanReceiver
 
 	@Override
 	public String getIcon() {
-		return "mirror";
+		return "ic_launcher";
 	}
 
 	@Override
@@ -37,16 +37,16 @@ public class FinGoActionScanReceiver extends AbstractActionScanReceiver
 
 	@Override
 	public Type getType() {
-		return Type.LAUNCHER;
+		return Type.TOGGLE;
 	}
 
 	@Override
 	public HashMap<State, String> getIcons() {
 		HashMap<State, String> icons = new HashMap<State, String>();
-		icons.put(State.DEFAULT, "mirror");
-		icons.put(State.TOGGLE_FIRST, "mirror");
-		icons.put(State.TOGGLE_SECOND, "mirror");
-		icons.put(State.TOGGLE_THIRD, "mirror");
+		icons.put(State.DEFAULT, "leggo");
+		icons.put(State.TOGGLE_FIRST, "leggo");
+		icons.put(State.TOGGLE_SECOND, "leggo2");
+		icons.put(State.TOGGLE_THIRD, "leggo");
 		return icons;
 	}
 
